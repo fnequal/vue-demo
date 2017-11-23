@@ -1,0 +1,17 @@
+{
+  // 预设
+  "presets": [
+    // 对es6进行转码，设置amd、commonjs这样的模块文件不进行转码
+    ["env", {
+      "modules": false //默认为commonjs
+    }],
+    "stage-2" //第二阶段提案
+  ],
+  // presets中不提供的插件
+  "plugins": ["transform-runtime"],
+  // test环境下执行的转码规则，会覆盖上面的设置
+  "env": {
+    "test": {
+      "presets": ["env", "stage-2"]    }
+  }
+}
