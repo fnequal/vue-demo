@@ -45,7 +45,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       compress: {
         warnings: false
       },
-      sourceMap: config.build.productionSourceMap,
+      sourceMap: config.build.productionSourceMap, //线上生成soucemap文件，便于调试；上线后的devtool配置为source-map
       parallel: true //使用多进程并行运行和文件缓存来提高构建速度
     }),
     // extract css into its own file
@@ -81,19 +81,21 @@ const webpackConfig = merge(baseWebpackConfig, {
         // https://github.com/kangax/html-minifier#options-quick-reference
       },
       // necessary to consistently work with multiple chunks via CommonsChunkPlugin
-      chunksSortMode: 'dependency' //注入时，根据依赖先后顺序注入
+      chunksSortMode: 'dependency' //注入时，根据依赖先后顺序注入，manifest -> vendor -> app 
     }),
     // keep module.id stable when vender modules does not change
-    // 对模块路径进行MD5摘要，生成四位字符的module.id，使module.id稳定
+    // 对模块路径进行MD5摘要，生成四位字符的module.id，使module.id稳定；打包后的文件更小，也不泄露路径
     new webpack.HashedModuleIdsPlugin(),
     // enable scope hoisting
-    // 允许作用域提升，所有模块放在一个函数里
+    // webpack打包的每个模块都会被包装在一个单独的函数中，导致JS在浏览器中的执行速度变慢
+    // ModuleConcatenationPlugin将一些有联系的模块，放到一个函数里面
     new webpack.optimize.ModuleConcatenationPlugin(),
     // split vendor js into its own file
     // 将所有从node_modules引入的文件提取到verdor.js，即抽取库文件
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
       //  在传入公共chunk(commons chunk)之前所需要包含的最少数量的chunks
+      // 这里指定范围是来自node_modules的js文件
       minChunks: function (module) {
         // any required modules inside node_modules are extracted to vendor
         return (
@@ -108,6 +110,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     // extract webpack runtime and module manifest to its own file in order to
     // prevent vendor hash from being updated whenever app bundle is updated
     // 从vendor中提取manifest，业务代码发生变化时，vendor的hash不变。充分利用浏览器的缓存
+    // module管理打码
     new webpack.optimize.CommonsChunkPlugin({
       name: 'manifest',
       minChunks: Infinity
@@ -115,7 +118,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     // This instance extracts shared chunks from code splitted chunks and bundles them
     // in a separate chunk, similar to the vendor chunk
     // see: https://webpack.js.org/plugins/commons-chunk-plugin/#extra-async-commons-chunk
-    // 创建一个新的异步公共chunk，作为app的子节点，与app并行加载
+    // 创建一个新的异步公共chunk，与app并行加载
     new webpack.optimize.CommonsChunkPlugin({
       name: 'app',
       async: 'vendor-async',
@@ -135,7 +138,7 @@ const webpackConfig = merge(baseWebpackConfig, {
   ]
 })
 
-// 是否开启gzip压缩
+// 是否开启gzip压缩，需要服务端配合设置
 if (config.build.productionGzip) {
   const CompressionWebpackPlugin = require('compression-webpack-plugin')
 

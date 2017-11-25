@@ -18,7 +18,7 @@ const webpackConfig = require('./webpack.prod.conf')
 const spinner = ora('building for production...')
 spinner.start() //开始loading
 
-// 删除dist/static下的文件
+// 删除dist下的static
 rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {
   if (err) throw err
   webpack(webpackConfig, function (err, stats) {

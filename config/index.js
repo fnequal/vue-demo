@@ -37,7 +37,7 @@ module.exports = {
      */
 
     // https://webpack.js.org/configuration/devtool/#development
-    devtool: 'eval-source-map',
+    devtool: 'eval-source-map', //本地开发使用，可以映射到具体的vue文件
 
     // If you have problems debugging vue-files in devtools,
     // set this to false - it *may* help
@@ -67,7 +67,7 @@ module.exports = {
 
     productionSourceMap: true, //是否开启css的source maps
     // https://webpack.js.org/configuration/devtool/#production
-    devtool: '#source-map', //生成一个SourceMap文件
+    devtool: '#source-map', //生成一个SourceMap文件，可以映射到压缩前的map文件
     
     // Gzip off by default as many popular static hosts such as
     // Surge or Netlify already gzip all static assets for you.
